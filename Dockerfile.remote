@@ -1,0 +1,23 @@
+FROM python:3.11-slim
+
+ARG REPO_URL=https://github.com/Clam-/ha-pxe-janky-thermostat.git
+ARG REPO_REF=main
+ARG APP_SUBDIR=janky-thermostat
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    JANKY_CONFIG_FILE=/config/config.json
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential git \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone --depth 1 --branch "${REPO_REF}" "${REPO_URL}" /tmp/source \
+    && cp -R "/tmp/source/${APP_SUBDIR}/." /app/ \
+    && rm -rf /tmp/source
+
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+CMD ["python", "-u", "/app/main.py"]

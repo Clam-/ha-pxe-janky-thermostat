@@ -1,0 +1,17 @@
+services:
+  janky-thermostat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: janky-thermostat
+    restart: unless-stopped
+    volumes:
+      - ${JANKY_CONFIG_PATH:-./config.json}:/config/config.json:ro
+    environment:
+      MQTT_BROKER: ${MQTT_BROKER:-mosquitto}
+      MQTT_PORT: ${MQTT_PORT:-1883}
+      MQTT_USERNAME: ${MQTT_USERNAME:-}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-}
+      PIGPIO_ADDR: ${PIGPIO_ADDR:-pigpio}
+      PIGPIO_PORT: ${PIGPIO_PORT:-8888}
+      I2C_BUS: ${I2C_BUS:-0}
