@@ -3,14 +3,14 @@
 # Add more /dev/gpiochip* entries if your Raspberry Pi exposes additional gpiochips.
 
 log_level: info
-server_ip: 192.168.25.250
+server_ip: 
 default_username: pi
 default_password: ""
 default_timezone: Australia/Melbourne
 default_keyboard_layout: us
 default_locale: en_AU.UTF-8
 ssh_authorized_keys: |
-  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE6A4C2WQY0gVxk7bP5fA8Bf4m3jX9pW5rP8YqL3m7wN lee@example-macbook
+  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE6A4C2WQY0gVxk7bP5fA8Bf4m3jX9pW5rP8YqL3m7wN user@example
 clients:
   - serial: "cdc843d7"
     model: pi4
