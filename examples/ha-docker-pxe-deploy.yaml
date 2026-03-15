@@ -42,14 +42,7 @@ clients:
         },
         {
           "name": "janky-thermostat",
-          "image": "local/janky-thermostat:latest",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/Clam-/ha-pxe-janky-thermostat.git",
-            "ref": "main",
-            "context": ".",
-            "dockerfile": "Dockerfile"
-          },
+          "image": "ghcr.io/clam-docker-images/janky-thermostat:latest",
           "depends_on": [
             "rgpiod"
           ],
