@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM debian:trixie-slim AS builder
 
 ARG REPO_URL=https://github.com/Clam-/ha-pxe-janky-thermostat.git
 ARG REPO_REF=main
@@ -6,20 +6,40 @@ ARG APP_SUBDIR=janky-thermostat
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
     JANKY_CONFIG_FILE=/config/config.json
 
 WORKDIR /app
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential git \
-    && rm -rf /var/lib/apt/lists/*
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends build-essential ca-certificates git python3 python3-pip python3-venv; \
+    git clone "${REPO_URL}" /tmp/source; \
+    cd /tmp/source; \
+    git checkout "${REPO_REF}"; \
+    python3 -m venv /opt/venv; \
+    /opt/venv/bin/pip install --upgrade pip setuptools wheel; \
+    /opt/venv/bin/pip install -r "/tmp/source/${APP_SUBDIR}/requirements.txt"; \
+    cp -R "/tmp/source/${APP_SUBDIR}/." /app/; \
+    rm -rf /tmp/source /var/lib/apt/lists/*
 
-RUN git clone "${REPO_URL}" /tmp/source \
-    && cd /tmp/source \
-    && git checkout "${REPO_REF}" \
-    && cp -R "/tmp/source/${APP_SUBDIR}/." /app/ \
-    && rm -rf /tmp/source
+FROM debian:trixie-slim AS runtime
 
-RUN pip install --no-cache-dir -r /app/requirements.txt
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    JANKY_CONFIG_FILE=/config/config.json \
+    PATH=/opt/venv/bin:${PATH}
+
+WORKDIR /app
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends ca-certificates python3; \
+    rm -rf /var/lib/apt/lists/*; \
+    mkdir -p /config
+
+COPY --from=builder /opt/venv /opt/venv
+COPY --from=builder /app /app
 
 CMD ["python", "-u", "/app/main.py"]

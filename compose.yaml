@@ -1,8 +1,10 @@
 services:
   janky-thermostat:
+    image: ${JANKY_IMAGE:-janky-thermostat:dev}
     build:
       context: .
       dockerfile: Dockerfile
+      target: runtime
     container_name: janky-thermostat
     restart: unless-stopped
     volumes:
