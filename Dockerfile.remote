@@ -14,7 +14,9 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential git \
     && rm -rf /var/lib/apt/lists/*
 
-RUN git clone --depth 1 --branch "${REPO_REF}" "${REPO_URL}" /tmp/source \
+RUN git clone "${REPO_URL}" /tmp/source \
+    && cd /tmp/source \
+    && git checkout "${REPO_REF}" \
     && cp -R "/tmp/source/${APP_SUBDIR}/." /app/ \
     && rm -rf /tmp/source
 

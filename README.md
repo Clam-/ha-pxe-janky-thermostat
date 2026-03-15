@@ -67,7 +67,7 @@ docker build -t janky-thermostat \
   https://raw.githubusercontent.com/Clam-/ha-pxe-janky-thermostat/main/Dockerfile.remote
 ```
 
-[`Dockerfile.remote`](./Dockerfile.remote) is intentionally self-contained: it fetches the app source from GitHub during the build, so it still works when the build context is just a raw text file.
+[`Dockerfile.remote`](./Dockerfile.remote) is intentionally self-contained: it fetches the app source from GitHub during the build, so it still works when the build context is just a raw text file. `REPO_REF` can be a branch, tag, or commit SHA.
 
 To build a specific branch, tag, or commit with the raw-file path:
 
