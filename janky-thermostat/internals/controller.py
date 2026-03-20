@@ -121,11 +121,14 @@ class Controller:
                 self.currentsched = sched["timestamp"]
 
     def loop(self):
-        self.client.connect()
-        lastupdate = time.monotonic()
-        lastschedcheck = lastupdate
         apos: int | None = None
         try:
+            self.client.connect(SHUTDOWN_EV)
+            if SHUTDOWN_EV.is_set():
+                return
+
+            lastupdate = time.monotonic()
+            lastschedcheck = lastupdate
             while not SHUTDOWN_EV.is_set():
                 # process queue
                 if not self.controllerq.empty():
