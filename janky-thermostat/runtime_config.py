@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from typing import Any, Optional
 
@@ -26,6 +27,13 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "loglevel": "WARNING",
 }
 
+MQTT_ENV_IMPORTS: dict[str, tuple[str, ...]] = {
+    "mqtt_broker": ("MQTT_BROKER", "MQTT_HOST"),
+    "mqtt_port": ("MQTT_PORT",),
+    "mqtt_username": ("MQTT_USERNAME",),
+    "mqtt_password": ("MQTT_PASSWORD",),
+}
+
 
 def _parse_optional_str(value: str) -> Optional[str]:
     value = value.strip()
@@ -43,8 +51,21 @@ def load_runtime_config(config_path: str = DEFAULT_CONFIG_PATH) -> dict[str, Any
     if not isinstance(file_config, dict):
         raise ValueError(f"Config file must contain a JSON object: {path}")
     config.update(file_config)
+    apply_mqtt_env_imports(config, file_config)
 
     return normalize_config(config)
+
+
+def apply_mqtt_env_imports(config: dict[str, Any], file_config: dict[str, Any]) -> None:
+    for key, env_names in MQTT_ENV_IMPORTS.items():
+        if key in file_config and file_config[key] is not None:
+            continue
+        for env_name in env_names:
+            raw_value = os.getenv(env_name)
+            if raw_value is None:
+                continue
+            config[key] = raw_value
+            break
 
 
 def normalize_config(config: dict[str, Any]) -> dict[str, Any]:

@@ -6,6 +6,7 @@ This project runs the original thermostat controller as a standard OCI container
 
 - The container starts with `python /app/main.py`.
 - Runtime settings come from the JSON file mounted at `/config/config.json`.
+- MQTT settings can also be imported from `MQTT_BROKER` or `MQTT_HOST`, plus `MQTT_PORT`, `MQTT_USERNAME`, and `MQTT_PASSWORD`, when the corresponding JSON keys are missing or `null`.
 - No Supervisor, `bashio`, `with-contenv`, or `/data/options.json` is used.
 
 ## Files
@@ -220,6 +221,8 @@ The JSON file uses the same core thermostat settings as the add-on, with MQTT an
 - `i2c_bus`: I2C bus passed through to the `rgpio`-backed sensor libraries.
 - `rgpio_addr`, `rgpio_port`: `rgpiod` daemon endpoint.
 - `loglevel`: One of `CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`.
+
+When `mqtt_broker`, `mqtt_port`, `mqtt_username`, or `mqtt_password` are omitted from the JSON file, or set to `null`, the runtime falls back to `MQTT_BROKER`/`MQTT_HOST`, `MQTT_PORT`, `MQTT_USERNAME`, and `MQTT_PASSWORD` if those environment variables are present.
 
 ## Operational notes
 
